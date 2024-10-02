@@ -57,4 +57,18 @@ class MCEvaluator(AbstractEvaluator):
 
         :param episode: A list of (state, action, reward) tuples.
         """
+
+        # Store cumulative reward(return) for each state and track already visited states
+        G = 0
+        visited_states = set()
+
+        for t in reversed(range(len(episode))):
+            state, A, R = episode[t]
+            G = R + self.env.gamma * G
+
+            # Only update if the state has not been visited before (first-visit) and update the value function for the state as the mean of all returns
+            if state not in visited_states:
+                visited_states.add(state)
+                self.returns[state].append(G)
+                self.value_fun[state] = np.mean(self.returns[state])
         pass
